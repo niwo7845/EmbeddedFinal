@@ -13,7 +13,7 @@
 
 #define		TIM_BUZZER 0
 #define		TIM_STOPWATCH 1
-#define		TIM_STOPWATCH_PRE	0xC349    // makes 320 hz clock
+#define		TIM_STOPWATCH_PRE	0xF424    // makes 100 hz clock
 #define		TIM_STOPWATCH_ARR	0xFFFF
 
 #define 	TIM_BUZZER_PRE		0x200
@@ -21,7 +21,7 @@
 
 
 void TIM_init(uint8_t timer);
-void TIM_stopwatch_printTime();
+float TIM_stopwatch_getTime();
 void TIM_start(uint8_t timer);
 void TIM_stop(uint8_t timer);
 void TIM_reset(uint8_t timer);

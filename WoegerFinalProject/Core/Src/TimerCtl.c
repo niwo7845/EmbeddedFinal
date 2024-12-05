@@ -45,13 +45,12 @@ void TIM_init(uint8_t timer) {
 		// which is plenty of time.
 	}
 }
-void TIM_stopwatch_printTime() {
+float TIM_stopwatch_getTime() {
 	TIM_stop(TIM_STOPWATCH);
 	uint32_t count = __HAL_TIM_GET_COUNTER(&stopwatch);
-	float printvalue = (float) count / 125;
-	printf("Time of session: %f seconds\n", printvalue);
+	float printvalue = (float) count / 0x541; //  TODO - figure out value to divide by (maybe it isn't 16mhz anymore)
 	TIM_reset(TIM_STOPWATCH);
-
+	return printvalue;
 }
 void TIM_start(uint8_t timer) {
 	switch (timer) {

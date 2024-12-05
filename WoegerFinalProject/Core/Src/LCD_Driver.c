@@ -243,7 +243,23 @@ void LCD_Draw_Vertical_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color
 	  LCD_Draw_Pixel(x, i+y, color);
   }
 }
+void LCD_Draw_Horizontal_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color) {
+	for (uint16_t i = 0; i < len; i++) {
+		LCD_Draw_Pixel(i+x, y, color);
+	}
+}
 
+void LCD_DrawBox_Unfilled(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
+	LCD_Draw_Horizontal_Line(x, y, width, color);
+	LCD_Draw_Horizontal_Line(x, y + height, width, color);
+	LCD_Draw_Vertical_Line(x, y, height, color);
+	LCD_Draw_Vertical_Line(x+width, y, height, color);
+}
+void LCD_DrawBox_Filled(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
+	for (uint16_t i = y; i < y + height; i++) {
+		LCD_Draw_Horizontal_Line(x, i, width, color);
+	}
+}
 void LCD_Clear(uint8_t LayerIndex, uint16_t Color)
 {
 	if (LayerIndex == 0){
@@ -291,6 +307,14 @@ void LCD_DisplayChar(uint16_t Xpos, uint16_t Ypos, uint8_t Ascii)
 {
   Ascii -= 32;
   LCD_Draw_Char(Xpos, Ypos, &LCD_Currentfonts->table[Ascii * LCD_Currentfonts->Height]);
+}
+
+void LCD_DisplayStr(uint16_t xStart, uint16_t yStart, char * Ascii, uint16_t str_length) {
+	uint16_t xCurr = xStart;
+	for (uint16_t i = 0; i < str_length; i++) {
+		LCD_DisplayChar(xCurr, yStart, Ascii[i]);
+		xCurr += LCD_Currentfonts->Width - 1;
+	}
 }
 
 void visualDemo(void)
