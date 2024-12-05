@@ -37,7 +37,6 @@ void TIM_init(uint8_t timer) {
 		stopwatch.Instance = TIM5;
 		stopwatch.Init.Prescaler = TIM_STOPWATCH_PRE; // makes 320 hz clock
 		stopwatch.Init.Period = TIM_STOPWATCH_ARR;		// maximum value
-		stopwatch.Init.ClockDivision = TIM_CLOCKDIVISION_DIV2; // divides to 960hz clock
 		stopwatch.Init.CounterMode = TIM_COUNTERMODE_UP;
 		HAL_TIM_Base_Init(&stopwatch);
 		return;
@@ -49,7 +48,7 @@ float TIM_stopwatch_getTime() {
 //	TIM_stop(TIM_STOPWATCH);
 	uint32_t count = __HAL_TIM_GET_COUNTER(&stopwatch);
 //	TIM_start(TIM_STOPWATCH);
-	float printvalue = (float) count / 0x6d7; //  TODO - figure out value to divide by (maybe it isn't 16mhz anymore)
+	float printvalue = (float) count / 0x502; //  TODO - figure out value to divide by (maybe it isn't 16mhz anymore)
 //	TIM_reset(TIM_STOPWATCH);
 	return printvalue;
 }

@@ -27,6 +27,7 @@ static FONT_t *LCD_Currentfonts;
 static uint16_t CurrentTextColor   = 0xFFFF;
 
 
+
 /*
  * fb[y*W+x] OR fb[y][x]
  * Alternatively, we can modify the linker script to have an end address of 20013DFB instead of 2002FFFF, so it does not place variables in the same region as the frame buffer. In this case it is safe to just specify the raw address as frame buffer.
@@ -305,7 +306,11 @@ void LCD_Draw_Char(uint16_t Xpos, uint16_t Ypos, const uint16_t *c)
 //This was taken and adapted from stm32's mcu code
 void LCD_DisplayChar(uint16_t Xpos, uint16_t Ypos, uint8_t Ascii)
 {
+  if (Ascii == 0) {
+	return;
+  }
   Ascii -= 32;
+
   LCD_Draw_Char(Xpos, Ypos, &LCD_Currentfonts->table[Ascii * LCD_Currentfonts->Height]);
 }
 

@@ -22,7 +22,7 @@ void App_Buzzer_test1();
 void App_Buzzer_beep();
 
 // screen
-void App_endScreen(float *time, uint8_t *result);
+void App_endScreen();
 void App_startScreen();
 void App_DetectScreen();
 void drawTime();

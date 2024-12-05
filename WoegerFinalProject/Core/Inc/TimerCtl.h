@@ -13,7 +13,7 @@
 
 #define		TIM_BUZZER 0
 #define		TIM_STOPWATCH 1
-#define		TIM_STOPWATCH_PRE	0xFF00    // makes 500 hz clock
+#define		TIM_STOPWATCH_PRE	0xFFFF    // makes 500 hz clock
 #define		TIM_STOPWATCH_ARR	0xFFFF
 
 #define 	TIM_BUZZER_PRE		0x1B60

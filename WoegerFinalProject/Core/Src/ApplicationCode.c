@@ -23,13 +23,13 @@ void ApplicationInit(void) {
 void App_startScreen() {
 	LCD_SetTextColor(LCD_COLOR_BLACK);
 	LCD_SetFont(&Font12x12);
+	LCD_DisplayStr(15, 10, "Metal Detector", 14);
 	LCD_DisplayStr(40, 50, "Press to start", 14);
 	LCD_DisplayStr(10, 300, "Nikolai Woeger", 14);
 	LCD_DrawBox_Unfilled(40, 130, 160, 80, LCD_COLOR_BLACK);
 	LCD_DrawBox_Filled(41, 131, 159, 79, LCD_COLOR_WHITE);
 	LCD_SetFont(&Font16x24);
 	LCD_DisplayStr(85, 160, "START", 5);
-	LCD_DisplayStr(15, 10, "Metal Detector", 14);
 }
 void App_DetectScreen() {
 	if (detected == 1) {
@@ -40,6 +40,7 @@ void App_DetectScreen() {
 	}
 	else {
 		LCD_SetTextColor(LCD_COLOR_BLACK);
+
 		LCD_Clear(0, LCD_COLOR_GREEN);
 		LCD_SetFont(&Font12x12);
 		LCD_DisplayStr(25, 60, "No Metal Detected", 17);
@@ -54,7 +55,7 @@ void App_DetectScreen() {
 	HAL_Delay(100);
 	TIM_start(TIM_STOPWATCH);
 	while (1) {
-		if (TIM_stopwatch_getTime() >= 60) {
+		if (TIM_stopwatch_getTime() >= 45) {
 			break;
 		}
 		drawTime();
@@ -62,18 +63,21 @@ void App_DetectScreen() {
 	}
 	TIM_stop(TIM_STOPWATCH);
 	TIM_reset(TIM_STOPWATCH);
+
+	App_endScreen();
 }
 void drawTime() {
 	LCD_DrawBox_Filled(40, 220, 170, 40, LCD_COLOR_GREEN);
 	LCD_SetTextColor(LCD_COLOR_BLACK);
 	LCD_SetFont(&Font12x12);
 	float value = TIM_stopwatch_getTime();
-	char time_s [6];
-	gcvt(value, 6, time_s);
-	LCD_DisplayStr(40, 220, time_s, 7);
+	char time_s [4];
+	gcvt(value, 4, time_s);
+	LCD_DisplayStr(40, 220, time_s, 5);
 }
-void App_endScreen(float *time, uint8_t *result) {
-	LCD_Clear(0, LCD_COLOR_GREY);
+void App_endScreen() {
+	LCD_Clear(0, LCD_COLOR_BLUE);
+	App_Buzzer_beep();
 
 }
 
