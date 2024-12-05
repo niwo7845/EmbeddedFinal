@@ -7,7 +7,8 @@
 
 
 #include "ApplicationCode.h"
-
+static uint8_t detected;
+static int count;
 
 void ApplicationInit(void) {
 	LTCD__Init();
@@ -49,23 +50,53 @@ void App_DetectScreen() {
 	LCD_DisplayStr(40, 10, "Detecting...", 12);
 	LCD_SetTextColor(LCD_COLOR_BLACK);
 	LCD_DisplayStr(90, 160, "STOP", 4);
+	TIM_reset(TIM_STOPWATCH);
+	HAL_Delay(100);
+	TIM_start(TIM_STOPWATCH);
+	while (1) {
+		if (TIM_stopwatch_getTime() >= 60) {
+			break;
+		}
+		drawTime();
+		HAL_Delay(50);
+	}
+	TIM_stop(TIM_STOPWATCH);
+	TIM_reset(TIM_STOPWATCH);
 }
+void drawTime() {
+	LCD_DrawBox_Filled(40, 220, 170, 40, LCD_COLOR_GREEN);
+	LCD_SetTextColor(LCD_COLOR_BLACK);
+	LCD_SetFont(&Font12x12);
+	float value = TIM_stopwatch_getTime();
+	char time_s [6];
+	gcvt(value, 6, time_s);
+	LCD_DisplayStr(40, 220, time_s, 7);
+}
+void App_endScreen(float *time, uint8_t *result) {
+	LCD_Clear(0, LCD_COLOR_GREY);
 
+}
 
 void App_Stopwatch_init() {
 	TIM_init(TIM_STOPWATCH);
 }
 void App_Stopwatch_test1() {
-	TIM_stopwatch_getTime();
 	TIM_start(TIM_STOPWATCH);
 	HAL_Delay(2000);
-	printf("%f\n", TIM_stopwatch_getTime());
+	TIM_stop(TIM_STOPWATCH);
+	float value = TIM_stopwatch_getTime();
+	char time_s [6];
+	gcvt(value, 6, time_s);
+	printf("%s\n", time_s);
 }
 void App_Buzzer_init() {
 	TIM_init(TIM_BUZZER);
 }
 void App_Buzzer_test1() {
-
+	TIM_start(TIM_BUZZER);
+	HAL_Delay(1000);
+	TIM_stop(TIM_BUZZER);
+	printf("%d\n", count/2);
 }
 void App_Buzzer_beep() {
 	TIM_start(TIM_BUZZER);
@@ -85,6 +116,7 @@ void TIM2_IRQHandler() {
 	HAL_NVIC_DisableIRQ(TIM2_IRQn);
 	TIM_buzzer_clearUIF();
 	HAL_NVIC_ClearPendingIRQ(TIM2_IRQn);
+	count++;
 	TIM_buzzer_toggle();
 	HAL_NVIC_EnableIRQ(TIM2_IRQn);
 

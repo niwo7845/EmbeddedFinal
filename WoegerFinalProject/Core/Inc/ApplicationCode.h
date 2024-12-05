@@ -10,15 +10,21 @@
 #include "LCD_Driver.h"
 #include "TimerCtl.h"
 
-static uint8_t detected = 0;
+
 
 void ApplicationInit(void);
+
+// timers
 void App_Stopwatch_init();
 void App_Stopwatch_test1();
 void App_Buzzer_init();
 void App_Buzzer_test1();
 void App_Buzzer_beep();
+
+// screen
+void App_endScreen(float *time, uint8_t *result);
 void App_startScreen();
 void App_DetectScreen();
+void drawTime();
 
 #endif /* INC_APPLICATIONCODE_H_ */

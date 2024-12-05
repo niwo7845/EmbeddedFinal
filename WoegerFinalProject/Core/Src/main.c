@@ -96,11 +96,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
-//  ApplicationInit();
   App_Stopwatch_init();
+//  ApplicationInit();
   App_Stopwatch_test1();
 //  App_Buzzer_init();
 //  App_Buzzer_test1();
+//  App_Buzzer_beep();
   /* USER CODE END 2 */
 
   /* Infinite loop */
