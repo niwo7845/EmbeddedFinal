@@ -7,8 +7,13 @@
 
 
 #include "ApplicationCode.h"
+static EXTI_HandleTypeDef EXTI15;
 static uint8_t detected;
-static int count;
+static uint8_t CurrentScreen;
+static uint8_t count;
+static float lastTime;
+static uint8_t exitIT;
+static STMPE811_TouchData t;
 
 void ApplicationInit(void) {
 	LTCD__Init();
@@ -16,8 +21,33 @@ void ApplicationInit(void) {
 	LCD_SetFont(&Font16x24);
 	LCD_Clear(0, LCD_COLOR_GREY);
 	LCD_SetTextColor(LCD_COLOR_BLACK);
+	App_Buzzer_init();
+	EXTI15.Line = EXTI_LINE_15;
+
+	if (STMPE811_Init() != STMPE811_State_Ok) {
+		for (;;);
+	}
 //	App_startScreen();
-	App_DetectScreen();
+//	App_DetectScreen();
+}
+
+void App_ScreenHandler() {
+	while (1){
+		exitIT = 0;
+		HAL_Delay(500);
+		if (CurrentScreen == STARTSCREEN) {
+			TIM_stop(TIM_BUZZER);
+			TIM_stop(TIM_STOPWATCH);
+			TIM_reset(TIM_STOPWATCH);
+			App_startScreen();
+		}
+		else if (CurrentScreen == DETECTSCREEN) {
+			App_DetectScreen();
+		}
+		else if (CurrentScreen == ENDSCREEN){
+			App_endScreen();
+		}
+	}
 }
 
 void App_startScreen() {
@@ -55,20 +85,17 @@ void App_DetectScreen() {
 	HAL_Delay(100);
 	TIM_start(TIM_STOPWATCH);
 	while (1) {
-		if (TIM_stopwatch_getTime() >= 45) {
+		if (TIM_stopwatch_getTime() >= 45 || exitIT) {
 			break;
 		}
 		drawTime();
 		HAL_Delay(50);
 	}
 	TIM_stop(TIM_STOPWATCH);
-	TIM_reset(TIM_STOPWATCH);
-
-	App_endScreen();
 }
 void drawTime() {
-	LCD_DrawBox_Filled(40, 220, 170, 40, LCD_COLOR_GREEN);
-	LCD_SetTextColor(LCD_COLOR_BLACK);
+	LCD_DrawBox_Filled(40, 220, 170, 40, (detected ? LCD_COLOR_RED : LCD_COLOR_GREEN));
+	LCD_SetTextColor((detected ? LCD_COLOR_WHITE : LCD_COLOR_BLACK));
 	LCD_SetFont(&Font12x12);
 	float value = TIM_stopwatch_getTime();
 	char time_s [4];
@@ -78,7 +105,7 @@ void drawTime() {
 void App_endScreen() {
 	LCD_Clear(0, LCD_COLOR_BLUE);
 	App_Buzzer_beep();
-
+	drawTime();
 }
 
 void App_Stopwatch_init() {
@@ -114,6 +141,24 @@ void App_Buzzer_beep() {
 	TIM_start(TIM_BUZZER);
 	HAL_Delay(100);
 	TIM_stop(TIM_BUZZER);
+}
+
+void EXTI15_10_IRQHandler() {
+	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+	HAL_NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
+	HAL_EXTI_ClearPending(&EXTI15, 1);
+	exitIT = 1;
+	CurrentScreen++;
+	CurrentScreen%=3;
+	if (CurrentScreen == ENDSCREEN) {
+		lastTime = TIM_stopwatch_getTime();
+	}
+	STMPE811_DetermineTouchPosition(&t);
+	if (!isSTMPE811_Ready()) {
+		for(;;);
+	}
+	HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 }
 
 void TIM2_IRQHandler() {

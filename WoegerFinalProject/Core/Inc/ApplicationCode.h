@@ -9,6 +9,11 @@
 #define INC_APPLICATIONCODE_H_
 #include "LCD_Driver.h"
 #include "TimerCtl.h"
+#include "stmpe811.h"
+
+#define	STARTSCREEN 0
+#define DETECTSCREEN 1
+#define ENDSCREEN 2
 
 
 
@@ -25,6 +30,7 @@ void App_Buzzer_beep();
 void App_endScreen();
 void App_startScreen();
 void App_DetectScreen();
+void App_ScreenHandler();
 void drawTime();
 
 #endif /* INC_APPLICATIONCODE_H_ */
