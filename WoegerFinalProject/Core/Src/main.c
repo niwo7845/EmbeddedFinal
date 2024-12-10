@@ -75,7 +75,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  initialise_monitor_handles();
+//  initialise_monitor_handles();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -96,8 +96,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
-//  App_Buzzer_init();
-//  App_Buzzer_beep();
+  App_Buzzer_init();
+  App_Buzzer_beep();
   App_Stopwatch_init();
   ApplicationInit();
   App_ScreenHandler();

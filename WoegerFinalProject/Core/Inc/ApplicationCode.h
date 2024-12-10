@@ -10,6 +10,7 @@
 #include "LCD_Driver.h"
 #include "TimerCtl.h"
 #include "stmpe811.h"
+#include "MetalDetector.h"
 
 #define	STARTSCREEN 0
 #define DETECTSCREEN 1

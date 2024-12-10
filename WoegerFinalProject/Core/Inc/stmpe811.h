@@ -134,6 +134,9 @@ typedef STMPE811_t STMPE811_TouchData;
 #define TM_STMPE811_TouchInRectangle(sd, xPos, yPos, w, h)  (((sd)->x >= (xPos)) && ((sd)->x < (xPos + w)) && ((sd)->y >= (yPos)) && ((sd)->y < (yPos + h)))
 
 STMPE811_State_t STMPE811_ReadTouch(STMPE811_TouchData *data);
+void I2C3_Read(uint8_t address, uint8_t reg, uint8_t * rxData);
+void I2C3_Write(uint16_t devAddr, uint8_t reg, uint8_t data);
+
 uint8_t STMPE811_Read(uint8_t reg);
 void STMPE811_Write(uint8_t reg, uint8_t dataToWrite);
 STMPE811_State_t STMPE811_Init(void);

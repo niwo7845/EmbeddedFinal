@@ -1,0 +1,2 @@
+../Core/Src/MetalDetector.c:12:6:MetalDetectorInit	1
+../Core/Src/MetalDetector.c:22:15:pollDetector	1

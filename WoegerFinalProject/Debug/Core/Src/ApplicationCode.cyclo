@@ -1,0 +1,17 @@
+../Drivers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	2
+../Drivers/CMSIS/Include/core_cm4.h:1722:22:__NVIC_DisableIRQ	2
+../Drivers/CMSIS/Include/core_cm4.h:1775:22:__NVIC_ClearPendingIRQ	2
+../Core/Src/ApplicationCode.c:19:6:ApplicationInit	2
+../Core/Src/ApplicationCode.c:36:6:App_ScreenHandler	4
+../Core/Src/ApplicationCode.c:54:6:App_startScreen	2
+../Core/Src/ApplicationCode.c:69:6:drawBackground	2
+../Core/Src/ApplicationCode.c:90:6:App_DetectScreen	7
+../Core/Src/ApplicationCode.c:137:6:drawTime	5
+../Core/Src/ApplicationCode.c:147:6:App_endScreen	3
+../Core/Src/ApplicationCode.c:178:6:App_Stopwatch_init	1
+../Core/Src/ApplicationCode.c:181:6:App_Stopwatch_test1	1
+../Core/Src/ApplicationCode.c:190:6:App_Buzzer_init	1
+../Core/Src/ApplicationCode.c:193:6:App_Buzzer_test1	1
+../Core/Src/ApplicationCode.c:199:6:App_Buzzer_beep	1
+../Core/Src/ApplicationCode.c:213:6:EXTI15_10_IRQHandler	3
+../Core/Src/ApplicationCode.c:231:6:TIM2_IRQHandler	1

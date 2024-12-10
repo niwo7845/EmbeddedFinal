@@ -1,0 +1,7 @@
+../Core/Src/TimerCtl.c:14:6:TIM_init	48	static
+../Core/Src/TimerCtl.c:47:7:TIM_stopwatch_getTime	16	static
+../Core/Src/TimerCtl.c:55:6:TIM_start	16	static
+../Core/Src/TimerCtl.c:64:6:TIM_stop	16	static
+../Core/Src/TimerCtl.c:73:6:TIM_reset	16	static
+../Core/Src/TimerCtl.c:82:6:TIM_buzzer_clearUIF	4	static
+../Core/Src/TimerCtl.c:86:6:TIM_buzzer_toggle	8	static
