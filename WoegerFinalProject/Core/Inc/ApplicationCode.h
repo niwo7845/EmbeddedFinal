@@ -32,6 +32,6 @@ void App_endScreen();
 void App_startScreen();
 void App_DetectScreen();
 void App_ScreenHandler();
-void drawTime();
+void drawTime(uint16_t x, uint16_t y, uint16_t bg, uint16_t fg);
 
 #endif /* INC_APPLICATIONCODE_H_ */

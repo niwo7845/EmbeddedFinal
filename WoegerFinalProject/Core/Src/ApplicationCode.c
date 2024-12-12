@@ -7,9 +7,14 @@
 
 
 #include "ApplicationCode.h"
+
+static uint8_t detected_history [3];
+static float times_history [3];
+static int index;
+
 static EXTI_HandleTypeDef EXTI15;
 static uint8_t detected;
-static uint8_t detected_in_session = 0;
+static uint8_t detected_in_session;
 static uint8_t CurrentScreen;
 static uint8_t count;
 static float lastTime;
@@ -52,6 +57,8 @@ void App_ScreenHandler() {
 }
 
 void App_startScreen() {
+	detected_in_session = 0;
+	detected = 0;
 	LCD_Clear(0, LCD_COLOR_GREY);
 	LCD_SetTextColor(LCD_COLOR_BLACK);
 	LCD_SetFont(&Font12x12);
@@ -87,6 +94,13 @@ void drawBackground() {
 	LCD_SetTextColor(LCD_COLOR_BLACK);
 	LCD_DisplayStr(90, 160, "STOP", 4);
 }
+void move_arrays() {
+	for (int i = 2; i > 0; i--) {
+		detected_history[i] = detected_history[i-1];
+		times_history[i] = times_history[i-1];
+	}
+}
+
 void App_DetectScreen() {
 	if (detected == 1) {
 		LCD_SetTextColor(LCD_COLOR_WHITE);
@@ -120,56 +134,85 @@ void App_DetectScreen() {
 			if (detected) {
 				TIM_start(TIM_BUZZER);
 				detected_in_session = 1;
+
 			}
 			else {
 				TIM_stop(TIM_BUZZER);
 			}
 		}
-		drawTime();
-		HAL_Delay(50);
+		drawTime(60, 280, 0, 0);
+		HAL_Delay(25);
 	}
 	TIM_stop(TIM_STOPWATCH);
+	TIM_stop(TIM_BUZZER);
+	move_arrays();
+	detected_history[0] = detected_in_session;
+	times_history[0] = TIM_stopwatch_getTime();
+	if (index != 3) {
+		index++;
+	}
 	if (!exitIT)
 		CurrentScreen++;
 	HAL_Delay(100);
 	I2C3_Write(STMPE811_ADDRESS, STMPE811_INT_STA, 0xFF);
 }
-void drawTime() {
-	LCD_DrawBox_Filled(40, 220, 170, 40, ((CurrentScreen == ENDSCREEN) ? LCD_COLOR_GREY : (detected ? LCD_COLOR_RED : LCD_COLOR_GREEN)));
-	LCD_SetTextColor((CurrentScreen == ENDSCREEN) ? LCD_COLOR_BLACK : (detected ? LCD_COLOR_WHITE : LCD_COLOR_BLACK));
+void drawTime(uint16_t x, uint16_t y, uint16_t bg, uint16_t fg) {
+	LCD_DrawBox_Filled(x, y, 100, 12, ((CurrentScreen == ENDSCREEN) ? bg : (detected ? LCD_COLOR_RED : LCD_COLOR_GREEN)));
+	LCD_SetTextColor((CurrentScreen == ENDSCREEN) ? fg : (detected ? LCD_COLOR_WHITE : LCD_COLOR_BLACK));
 	LCD_SetFont(&Font12x12);
 	float value = TIM_stopwatch_getTime();
 	char time_s [4];
 	gcvt(value, 4, time_s);
-	LCD_DisplayStr(60, 220, time_s, 5);
-	LCD_DisplayStr(140, 220, "sec", 3);
+	LCD_DisplayStr(x, y, time_s, 5);
+	LCD_DisplayStr(x + 80, y, "sec", 3);
 }
 void App_endScreen() {
 	LCD_Clear(0, LCD_COLOR_GREY);
-	drawTime();
 
 	if (detected_in_session) {
-		LCD_DrawBox_Unfilled(15, 70, 210, 80, LCD_COLOR_BLACK);
-		LCD_DrawBox_Filled(16, 71, 209, 79, LCD_COLOR_RED);
+		LCD_DrawBox_Unfilled(15, 50, 210, 80, LCD_COLOR_BLACK);
+		LCD_DrawBox_Filled(16, 51, 209, 79, LCD_COLOR_RED);
 		LCD_SetFont(&Font12x12);
 		LCD_SetTextColor(LCD_COLOR_WHITE);
-		LCD_DisplayStr(48, 90, "Metal has been", 14);
-		LCD_DisplayStr(75, 115, "Detected", 8);
+		LCD_DisplayStr(48, 55, "Metal has been", 14);
+		LCD_DisplayStr(75, 70, "Detected", 8);
+		LCD_DisplayStr(40, 95, "Session Length:", 15);
+		drawTime(65, 110, LCD_COLOR_RED, LCD_COLOR_WHITE);
 	}
 	else {
-		LCD_DrawBox_Unfilled(15, 70, 210, 80, LCD_COLOR_BLACK);
-		LCD_DrawBox_Filled(16, 71, 209, 79, LCD_COLOR_GREEN);
+		LCD_DrawBox_Unfilled(15, 50, 210, 80, LCD_COLOR_BLACK);
+		LCD_DrawBox_Filled(16, 51, 209, 79, LCD_COLOR_GREEN);
 		LCD_SetFont(&Font12x12);
 		LCD_SetTextColor(LCD_COLOR_BLACK);
-		LCD_DisplayStr(55, 90, "No Metal was", 12);
-		LCD_DisplayStr(75, 115, "Detected", 8);
+		LCD_DisplayStr(55, 55, "No Metal was", 12);
+		LCD_DisplayStr(75, 70, "Detected", 8);
+		LCD_DisplayStr(40, 95, "Session Length:", 15);
+		drawTime(65, 110, LCD_COLOR_GREEN, LCD_COLOR_BLACK);
 	}
+	// log code
+	LCD_DrawBox_Unfilled(15, 130, 210, 160, LCD_COLOR_BLACK);
+	LCD_DrawBox_Filled(16, 131, 209, 159, LCD_COLOR_WHITE);
+	LCD_SetTextColor(LCD_COLOR_BLACK);
+
+
 	LCD_SetFont(&Font16x24);
 	LCD_SetTextColor(LCD_COLOR_BLACK);
 	LCD_DisplayStr(60, 10, "Finished", 12);
+	LCD_DisplayStr(85, 140, "Logs", 4);
 	LCD_SetFont(&Font12x12);
-	LCD_DisplayStr(40, 190, "Session Length:", 15);
-	LCD_DisplayStr(40, 290, "Tap to Restart", 14);
+	LCD_DisplayStr(48, 170, "Time", 4);
+	LCD_DisplayStr(145, 170, "Metal", 5);
+	LCD_Draw_Horizontal_Line(20, 185, 200, LCD_COLOR_BLACK);
+	LCD_Draw_Vertical_Line(120, 185, 95, LCD_COLOR_BLACK);
+	for (int i = 0; i < index; i++) {
+		char time_s [4];
+		gcvt(times_history[i], 4, time_s);
+		uint16_t y_pos = 195 + (i*30);
+		LCD_DisplayStr(30, y_pos, time_s, 4);
+		LCD_DrawBox_Filled(121, y_pos, 99, 20, (detected_history[i] ? LCD_COLOR_RED : LCD_COLOR_GREEN));
+	}
+	LCD_SetFont(&Font12x12);
+	LCD_DisplayStr(40, 300, "Tap to Restart", 14);
 	while (!exitIT);
 	HAL_Delay(100);
 	I2C3_Write(STMPE811_ADDRESS, STMPE811_INT_STA, 0xFF);
